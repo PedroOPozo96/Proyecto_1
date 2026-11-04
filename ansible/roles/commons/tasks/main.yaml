@@ -1,0 +1,13 @@
+- name: Actualizar índice y sistema
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: dist
+
+- name: Instalar paquetes comunes
+  ansible.builtin.apt:
+    name:
+      - vim
+      - curl
+      - net-tools
+    state: present
