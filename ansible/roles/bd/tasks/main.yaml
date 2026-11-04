@@ -1,0 +1,53 @@
+- name: Instalar MariaDB y el conector Python
+  ansible.builtin.apt:
+    name:
+      - mariadb-server
+      - python3-pymysql
+    state: present
+
+- name: Hacer que MariaDB escuche solo en la red de datos
+  ansible.builtin.template:
+    src: bind.cnf.j2
+    dest: /etc/mysql/mariadb.conf.d/99-bind.cnf
+    mode: "0644"
+  notify: Reiniciar MariaDB
+
+- name: Aplicar el reinicio ahora
+  ansible.builtin.meta: flush_handlers
+
+- name: Crear la base de datos
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    login_unix_socket: /run/mysqld/mysqld.sock
+    state: present
+
+- name: Crear el usuario, solo desde la IP del servidor web
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    host: "{{ db_allowed_host }}"
+    password: "{{ db_password }}"
+    priv: "{{ db_name }}.*:SELECT,INSERT,UPDATE,DELETE"
+    login_unix_socket: /run/mysqld/mysqld.sock
+    state: present
+
+- name: Copiar el esquema
+  ansible.builtin.copy:
+    src: schema.sql
+    dest: /opt/schema.sql
+    mode: "0644"
+
+- name: Comprobar si la tabla messages existe
+  community.mysql.mysql_query:
+    login_db: "{{ db_name }}"
+    login_unix_socket: /run/mysqld/mysqld.sock
+    query: "SHOW TABLES LIKE 'messages'"
+  register: tabla
+  changed_when: false
+
+- name: Crear las tablas (solo si no existen)
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    login_unix_socket: /run/mysqld/mysqld.sock
+    state: import
+    target: /opt/schema.sql
+  when: tabla.query_result[0] | length == 0
