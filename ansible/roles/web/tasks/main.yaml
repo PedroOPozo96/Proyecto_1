@@ -1,0 +1,49 @@
+- name: Instalar Apache, PHP y dependencias
+  ansible.builtin.apt:
+    name:
+      - apache2
+      - php
+      - libapache2-mod-php
+      - php-mysql
+      - php-mbstring
+      - git
+    state: present
+
+- name: Activar el módulo rewrite
+  ansible.builtin.command: a2enmod rewrite
+  args:
+    creates: /etc/apache2/mods-enabled/rewrite.load
+  notify: Recargar Apache
+
+- name: Descargar la aplicación
+  ansible.builtin.git:
+    repo: "{{ app_repo }}"
+    dest: "{{ app_dir }}"
+    update: false
+
+- name: Generar config.php desde la plantilla
+  ansible.builtin.template:
+    src: config.php.j2
+    dest: "{{ app_dir }}/config.php"
+    owner: root
+    group: www-data
+    mode: "0640"
+
+- name: Crear el virtual host
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: "/etc/apache2/sites-available/{{ vhost_name }}.conf"
+    mode: "0644"
+  notify: Recargar Apache
+
+- name: Activar el virtual host
+  ansible.builtin.command: "a2ensite {{ vhost_name }}.conf"
+  args:
+    creates: "/etc/apache2/sites-enabled/{{ vhost_name }}.conf"
+  notify: Recargar Apache
+
+- name: Desactivar el sitio por defecto
+  ansible.builtin.command: a2dissite 000-default.conf
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+  notify: Recargar Apache
