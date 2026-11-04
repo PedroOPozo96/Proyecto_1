@@ -1,0 +1,4 @@
+vhost_name: www.pedro.org
+app_repo: https://github.com/josedom24/guestbook_php.git
+app_dir: /var/www/guestbook
+db_host: "{{ hostvars['bd'].ip_datos }}
