@@ -10,4 +10,5 @@
       - vim
       - curl
       - net-tools
+      - mariadb-client
     state: present
