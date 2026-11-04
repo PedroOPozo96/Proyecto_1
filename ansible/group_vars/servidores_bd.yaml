@@ -1,0 +1,2 @@
+db_bind_address: "{{ ip_datos }}"
+db_allowed_host: "{{ hostvars['web'].ip_datos }}"
