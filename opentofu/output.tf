@@ -17,3 +17,15 @@ output "ip_datos_bd" {
   description = "IP estática (Datos) del servidor bd"
   value       = "10.10.10.12"
 }
+
+
+
+output "ip_nat_docker" {
+  description = "IP dinámica (NAT) del servidor Docker"
+  value       = libvirt_domain.dominio_docker.network_interface[0].addresses[0]
+}
+
+output "ip_datos_docker" {
+  description = "IP estática (Datos) del servidor Docker"
+  value       = "10.10.10.13"
+}
