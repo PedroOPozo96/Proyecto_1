@@ -96,3 +96,12 @@ resource "libvirt_volume" "volumen_docker" {
   base_volume_id = var.base_image_debian
   format         = "qcow2"
 }
+
+
+# 2. Disco Cloud-Init
+resource "libvirt_cloudinit_disk" "cloudinit_docker" {
+  name           = "cloudinit_docker.iso"
+  pool           = var.libvirt_pool_name
+  user_data      = file("${path.module}/cloud-init/user-data-docker.yaml")
+  network_config = file("${path.module}/cloud-init/network-config-docker.yaml")
+}
