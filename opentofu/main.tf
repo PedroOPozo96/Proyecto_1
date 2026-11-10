@@ -105,3 +105,27 @@ resource "libvirt_cloudinit_disk" "cloudinit_docker" {
   user_data      = file("${path.module}/cloud-init/user-data-docker.yaml")
   network_config = file("${path.module}/cloud-init/network-config-docker.yaml")
 }
+
+# 3. Máquina Virtual (Dominio)
+resource "libvirt_domain" "dominio_docker" {
+  name   = "servidor_docker"
+  memory = var.memory_docker
+  vcpu   = 2
+
+  disk {
+    volume_id = libvirt_volume.volumen_docker.id
+  }
+
+  cloudinit = libvirt_cloudinit_disk.cloudinit_docker.id
+
+  # ens3: Red NAT (DHCP)
+  network_interface {
+    network_id     = libvirt_network.red_nat.id
+    wait_for_lease = true
+  }
+
+  # ens4: Red de Datos (Estática)
+  network_interface {
+    network_id = libvirt_network.red_datos.id
+  }
+}
