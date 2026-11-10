@@ -83,3 +83,16 @@ resource "libvirt_domain" "dominio_bd" {
     network_id = libvirt_network.red_datos.id
   }
 }
+
+
+# ==========================================
+# SERVIDOR DOCKER (Debian 13)
+# ==========================================
+
+# 1. Volumen (Disco duro)
+resource "libvirt_volume" "volumen_docker" {
+  name           = "volumen_docker.qcow2"
+  pool           = var.libvirt_pool_name
+  base_volume_id = var.base_image_debian
+  format         = "qcow2"
+}
