@@ -21,3 +21,12 @@ variable "memory" {
   type        = number
   default     = 1024
 }
+
+
+# Variable para Docker
+
+variable "memory_docker" {
+  description = "Memoria RAM para el servidor Docker en MB"
+  type        = number
+  default     = 4096
+}
