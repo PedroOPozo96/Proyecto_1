@@ -1,6 +1,15 @@
-.terraform/
-terraform.tfstate
-terraform.tfstate.backup
-*.qcow2
-*.img
+# Directorios locales de OpenTofu
+**/.terraform/
+
+# Archivos de estado y copias de seguridad
+*.tfstate
+*.tfstate.*
+
+# Archivos temporales de bloqueo
+.terraform.tfstate.lock.info
+
+# Planes guardados
+*.tfplan
+
+# Inventario generado por OpenTofu
 ansible/hosts
