@@ -1,0 +1,23 @@
+---
+- name: Instalar dependencia Python para gestionar Docker
+  ansible.builtin.apt:
+    name: python3-requests
+    state: present
+
+- name: Crear volumen persistente de Portainer
+  community.docker.docker_volume:
+    name: portainer_data
+    state: present
+
+- name: Desplegar Portainer
+  community.docker.docker_container:
+    name: portainer
+    image: portainer/portainer-ce:lts
+    state: started
+    restart_policy: always
+    pull: missing
+    published_ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
