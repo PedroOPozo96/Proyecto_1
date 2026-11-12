@@ -4,11 +4,15 @@
   roles:
     - commons
 
+#Base de Datos
+
 - name: Servidor de base de datos
   hosts: servidores_bd
   become: true
   roles:
     - bd
+
+# Servidor Web
 
 - name: Servidor web
   hosts: servidores_web
@@ -16,9 +20,18 @@
   roles:
     - web
 
+# Servidor Docker
 
 - name: Servidor Docker
   hosts: servidores_docker
   become: true
   roles:
     - docker
+
+# Portainer en Servidor Docker
+
+- name: Servidor Portainer
+  hosts: servidores_docker
+  become: true
+  roles:
+    - portainer
