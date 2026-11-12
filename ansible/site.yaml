@@ -15,3 +15,10 @@
   become: true
   roles:
     - web
+
+
+- name: Servidor Docker
+  hosts: servidores_docker
+  become: true
+  roles:
+    - docker
