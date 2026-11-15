@@ -28,13 +28,7 @@
   roles:
     - docker
 
-# Portainer en Servidor Docker
 
-- name: Servidor Portainer
-  hosts: servidores_docker
-  become: true
-  roles:
-    - portainer
 
 
 # Proxy inverso Traefik
@@ -44,3 +38,14 @@
   become: true
   roles:
     - traefik
+
+
+# Portainer en Servidor Docker
+
+- name: Servidor Portainer
+  hosts: servidores_docker
+  become: true
+  roles:
+    - portainer
+
+
