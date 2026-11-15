@@ -1,0 +1,6 @@
+---
+- name: Crear red Docker para Traefik
+  community.docker.docker_network:
+    name: traefik_proxy
+    driver: bridge
+    state: present
