@@ -35,3 +35,12 @@
   become: true
   roles:
     - portainer
+
+
+# Proxy inverso Traefik
+
+- name: Servidor Traefik
+  hosts: servidores_docker
+  become: true
+  roles:
+    - traefik
