@@ -1,6 +1,35 @@
 ---
+# Rol de la red
+
 - name: Crear red Docker para Traefik
   community.docker.docker_network:
     name: traefik_proxy
     driver: bridge
     state: present
+
+
+#Rol del contenedor
+
+- name: Desplegar contenedor Traefik
+  community.docker.docker_container:
+    name: traefik
+    image: traefik:v3.7
+    state: started
+    restart_policy: always
+    pull: missing
+    published_ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - name: traefik_proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=traefik_proxy"
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      - "--accesslog=true"
