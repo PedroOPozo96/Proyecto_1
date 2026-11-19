@@ -8,6 +8,55 @@
     state: present
 
 
+# Directorios Certificados
+
+
+- name: Crear directorios para certificados y configuración de Traefik
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /etc/traefik/dynamic
+    - /etc/traefik/certs
+
+
+# Certificado HTTPS 
+
+- name: Copiar certificado HTTPS de Portainer
+  ansible.builtin.copy:
+    src: "{{ lookup('env', 'HOME') }}/.local/share/proyecto1/certificados/portainer.crt"
+    dest: /etc/traefik/certs/portainer.crt
+    owner: root
+    group: root
+    mode: "0644"
+
+# Clave Privada HTTPS
+
+- name: Copiar clave privada HTTPS de Portainer
+  ansible.builtin.copy:
+    src: "{{ lookup('env', 'HOME') }}/.local/share/proyecto1/certificados/portainer.key"
+    dest: /etc/traefik/certs/portainer.key
+    owner: root
+    group: root
+    mode: "0600"
+
+
+
+- name: Copiar configuración TLS de Traefik
+  ansible.builtin.copy:
+    src: tls.yaml
+    dest: /etc/traefik/dynamic/tls.yaml
+    owner: root
+    group: root
+    mode: "0644"
+
+
+
+
+
 #Rol del contenedor
 
 - name: Desplegar contenedor Traefik
@@ -24,6 +73,8 @@
       - name: traefik_proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/traefik/dynamic:/etc/traefik/dynamic:ro
+      - /etc/traefik/certs:/etc/traefik/certs:ro
     command:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
@@ -33,3 +84,6 @@
       - "--api.dashboard=true"
       - "--api.insecure=false"
       - "--accesslog=true"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+
