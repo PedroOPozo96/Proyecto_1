@@ -1,5 +1,5 @@
 ---
-# Rol de la red
+# Red Traefik
 
 - name: Crear red Docker para Traefik
   community.docker.docker_network:
@@ -55,6 +55,14 @@
 
 
 
+
+- name: Copiar configuración de enrutamiento de Guestbook
+  ansible.builtin.copy:
+    src: guestbook.yaml
+    dest: /etc/traefik/dynamic/guestbook.yaml
+    owner: root
+    group: root
+    mode: "0644"
 
 
 #Rol del contenedor

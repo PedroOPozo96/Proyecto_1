@@ -1,0 +1,14 @@
+---
+http:
+  routers:
+    guestbook:
+      rule: "Host(`guestbook.perico.test`)"
+      entryPoints:
+        - web
+      service: guestbook
+
+  services:
+    guestbook:
+      loadBalancer:
+        servers:
+          - url: "http://10.10.10.11:80"
