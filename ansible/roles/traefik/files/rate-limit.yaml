@@ -1,0 +1,8 @@
+---
+http:
+  middlewares:
+    guestbook-rate-limit:
+      rateLimit:
+        average: 10
+        period: 1s
+        burst: 20

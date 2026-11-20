@@ -65,6 +65,50 @@
     mode: "0644"
 
 
+
+# Autenticación Dashboard Traefik
+
+- name: Crear directorio para credenciales de Traefik
+  ansible.builtin.file:
+    path: /etc/traefik/auth
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Copiar credenciales del Dashboard
+  ansible.builtin.copy:
+    src: "{{ lookup('env', 'HOME') }}/.local/share/proyecto1/credenciales/traefik-users"
+    dest: /etc/traefik/auth/traefik-users
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: Copiar configuración del Dashboard
+  ansible.builtin.copy:
+    src: dashboard.yaml
+    dest: /etc/traefik/dynamic/dashboard.yaml
+    owner: root
+    group: root
+    mode: "0644"
+
+
+
+
+# Límite de peticiones Guestbook
+
+- name: Copiar configuración Rate Limiting de Guestbook
+  ansible.builtin.copy:
+    src: rate-limit.yaml
+    dest: /etc/traefik/dynamic/rate-limit.yaml
+    owner: root
+    group: root
+    mode: "0644"
+
+
+
+
 #Rol del contenedor
 
 - name: Desplegar contenedor Traefik
@@ -83,6 +127,7 @@
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/traefik/dynamic:/etc/traefik/dynamic:ro
       - /etc/traefik/certs:/etc/traefik/certs:ro
+      - /etc/traefik/auth:/etc/traefik/auth:ro
     command:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
@@ -91,6 +136,7 @@
       - "--providers.docker.network=traefik_proxy"
       - "--api.dashboard=true"
       - "--api.insecure=false"
+      - "--api.basepath=/traefik"
       - "--accesslog=true"
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"

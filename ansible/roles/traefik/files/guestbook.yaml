@@ -5,6 +5,8 @@ http:
       rule: "Host(`guestbook.perico.test`)"
       entryPoints:
         - web
+      middlewares:
+        - guestbook-rate-limit@file
       service: guestbook
 
   services:
