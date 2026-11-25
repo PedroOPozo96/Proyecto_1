@@ -10,6 +10,18 @@ resource "libvirt_volume" "volumen_web" {
   format         = "qcow2"
 }
 
+
+
+
+# Disco adicional para NFS y copias de seguridad
+resource "libvirt_volume" "volumen_nfs" {
+  name   = "volumen_nfs.qcow2"
+  pool   = var.libvirt_pool_name
+  size   = 5 * 1024 * 1024 * 1024
+  format = "qcow2"
+}
+
+
 # 2. Disco Cloud-Init
 resource "libvirt_cloudinit_disk" "cloudinit_web" {
   name           = "cloudinit_web.iso"
@@ -27,6 +39,12 @@ resource "libvirt_domain" "dominio_web" {
   disk {
     volume_id = libvirt_volume.volumen_web.id
   }
+
+  # Disco adicional para NFS y copias de seguridad
+  disk {
+    volume_id = libvirt_volume.volumen_nfs.id
+  }
+
   cloudinit = libvirt_cloudinit_disk.cloudinit_web.id
 
   # ens3: Red NAT (DHCP)
