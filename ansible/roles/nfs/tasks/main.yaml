@@ -1,0 +1,52 @@
+---
+# Instalación de herramientas LVM
+- name: Instalar LVM2
+  ansible.builtin.apt:
+    name: lvm2
+    state: present
+
+
+# Creación del grupo de volúmenes para NFS
+- name: Crear grupo de volúmenes NFS
+  community.general.lvg:
+    vg: vg_nfs
+    pvs: /dev/vdb
+    state: present
+
+
+# Creación del volumen lógico para NFS
+- name: Crear volumen lógico NFS
+  community.general.lvol:
+    vg: vg_nfs
+    lv: lv_nfs
+    size: 4g
+    state: present
+    shrink: false
+
+
+# Creación del sistema de archivos ext4
+- name: Formatear volumen lógico NFS
+  community.general.filesystem:
+    fstype: ext4
+    dev: /dev/vg_nfs/lv_nfs
+    state: present
+
+
+
+# Creación del punto de montaje
+- name: Crear directorio de montaje NFS
+  ansible.builtin.file:
+    path: /srv/nfs/datos
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+# Montaje persistente del volumen lógico
+- name: Montar volumen lógico NFS
+  ansible.posix.mount:
+    path: /srv/nfs/datos
+    src: /dev/vg_nfs/lv_nfs
+    fstype: ext4
+    opts: defaults
+    state: mounted

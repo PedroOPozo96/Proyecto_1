@@ -49,3 +49,10 @@
     - portainer
 
 
+# Servidor NFS
+- name: Servidor NFS
+  hosts: servidores_web
+  become: true
+  roles:
+    - nfs
+
