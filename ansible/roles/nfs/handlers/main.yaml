@@ -1,0 +1,4 @@
+---
+# Recarga de exportaciones NFS
+- name: Recargar exportaciones NFS
+  ansible.builtin.command: exportfs -ra

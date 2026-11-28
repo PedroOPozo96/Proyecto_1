@@ -50,3 +50,41 @@
     fstype: ext4
     opts: defaults
     state: mounted
+
+
+# Instalación del servidor NFS
+- name: Instalar servidor NFS
+  ansible.builtin.apt:
+    name: nfs-kernel-server
+    state: present
+
+
+
+
+# Creación del directorio de exportaciones NFS
+- name: Crear directorio de exportaciones NFS
+  ansible.builtin.file:
+    path: /etc/exports.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+
+# Configuración de la exportación NFS
+- name: Configurar exportación NFS
+  ansible.builtin.copy:
+    dest: /etc/exports.d/datos.exports
+    content: |
+      /srv/nfs/datos 10.10.10.0/24(rw,sync,no_subtree_check,root_squash)
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Recargar exportaciones NFS
+
+# Activación del servidor NFS
+- name: Habilitar e iniciar servidor NFS
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    state: started
+    enabled: true
