@@ -56,3 +56,9 @@
   roles:
     - nfs
 
+# Cliente NFS en servidor Docker
+- name: Cliente NFS
+  hosts: docker
+  become: true
+  roles:
+    - nfs_cliente

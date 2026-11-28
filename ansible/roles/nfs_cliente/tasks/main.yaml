@@ -1,0 +1,41 @@
+---
+# Instalación de herramientas NFS
+- name: Instalar cliente NFS
+  ansible.builtin.apt:
+    name: nfs-common
+    state: present
+
+# Grupo compartido para las copias
+- name: Crear grupo de copias NFS
+  ansible.builtin.group:
+    name: copias
+    gid: 2200
+    state: present
+
+# Usuario compartido para las copias
+- name: Crear usuario de copias NFS
+  ansible.builtin.user:
+    name: copias
+    uid: 2200
+    group: copias
+    shell: /usr/sbin/nologin
+    create_home: false
+    state: present
+
+# Directorio de montaje del cliente
+- name: Crear punto de montaje NFS
+  ansible.builtin.file:
+    path: /mnt/copias_nfs
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+# Montaje persistente de la exportación
+- name: Montar almacenamiento NFS
+  ansible.posix.mount:
+    path: /mnt/copias_nfs
+    src: 10.10.10.11:/srv/nfs/datos
+    fstype: nfs4
+    opts: rw,_netdev,vers=4
+    state: mounted
